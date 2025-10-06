@@ -52,4 +52,93 @@
       border: none;
       border-radius: 8px;
       padding: 12px 20px;
-      margin-top
+      margin-top: 20px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 0 15px #00ff99aa;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      background-color: #00e68a;
+      box-shadow: 0 0 25px #00ff99;
+    }
+
+    #status {
+      margin-top: 25px;
+      padding: 10px;
+      border-radius: 10px;
+      font-weight: bold;
+    }
+
+    .error {
+      color: #ff4444;
+    }
+
+    .success {
+      color: #00ff99;
+    }
+
+    footer {
+      margin-top: 40px;
+      font-size: 14px;
+      color: #88aa99;
+    }
+  </style>
+</head>
+<body>
+  <img src="https://raw.githubusercontent.com/KRMKTWN/Metx/main/IMG-20251004-WA0000%7E4.jpg" alt="MetX Logo" class="logo" />
+  <h1>MetX — XRPL NFT Rights Checker</h1>
+  <p>Enter your XRPL address or NFT ID to check what rights your token gives you.</p>
+
+  <input id="addressInput" placeholder="r..." />
+  <button id="checkButton">🔍 Check Rights</button>
+
+  <div id="status"></div>
+
+  <footer>Built on XRPL • MetX Beta</footer>
+
+  <script>
+    const status = document.getElementById("status");
+
+    async function connectXRPL() {
+      try {
+        status.textContent = "Connecting to XRPL...";
+        const client = new xrpl.Client("wss://s.altnet.rippletest.net:51233"); // testnet
+        await client.connect();
+        status.innerHTML = "✅ Connected to XRPL Testnet";
+        status.className = "success";
+
+        document.getElementById("checkButton").onclick = async () => {
+          const address = document.getElementById("addressInput").value.trim();
+          if (!address) {
+            status.innerHTML = "⚠️ Please enter a valid XRPL address or NFT ID.";
+            status.className = "error";
+            return;
+          }
+
+          try {
+            const response = await client.request({
+              command: "account_nfts",
+              account: address,
+            });
+
+            const nftCount = response.result.account_nfts.length;
+            status.innerHTML = `🎨 Found <b>${nftCount}</b> NFTs for this address.`;
+            status.className = "success";
+          } catch (err) {
+            status.innerHTML = "❌ Unable to fetch NFTs (maybe invalid address).";
+            status.className = "error";
+          }
+        };
+      } catch (err) {
+        status.innerHTML = "❌ XRPL connection failed.";
+        status.className = "error";
+      }
+    }
+
+    connectXRPL();
+  </script>
+</body>
+</html>
