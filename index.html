@@ -6,9 +6,9 @@
   <title>MetX Dashboard</title>
   <style>
     body {
-      background-color: #002b20; /* vert très foncé */
+      background-color: #002b20; /* vert foncé */
       color: #ffffff;
-      font-family: Arial, sans-serif;
+      font-family: "Inter", Arial, sans-serif;
       text-align: center;
       margin: 0;
       padding: 50px 20px;
@@ -17,12 +17,13 @@
     .logo {
       width: 120px;
       margin-bottom: 20px;
-      filter: drop-shadow(0 0 10px #0096a3);
+      filter: drop-shadow(0 0 10px #00d4aa);
     }
 
     h1 {
-      font-size: 28px;
+      font-size: 30px;
       margin-bottom: 10px;
+      font-weight: 700;
     }
 
     p {
@@ -36,25 +37,28 @@
       max-width: 400px;
       padding: 12px;
       border-radius: 10px;
-      border: 2px solid #0096a3;
+      border: 2px solid #00d4aa;
       font-size: 16px;
       text-align: center;
       outline: none;
+      background-color: #013428;
+      color: white;
     }
 
     button {
-      background-color: #0096a3;
-      color: #fff;
+      background-color: #00d4aa;
+      color: #002b20;
       border: none;
       border-radius: 10px;
       padding: 12px 24px;
       font-size: 16px;
       margin-top: 20px;
       cursor: pointer;
+      font-weight: 600;
     }
 
     button:hover {
-      background-color: #00b5c9;
+      background-color: #00eebd;
     }
 
     .result {
@@ -62,10 +66,14 @@
       font-size: 18px;
       color: #a8ffcb;
     }
+
+    .error {
+      color: #ff7070;
+    }
   </style>
 </head>
 <body>
-  <img class="logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/XRPL_Logo.svg/1200px-XRPL_Logo.svg.png" alt="XRPL Logo">
+  <img class="logo" src="https://i.imgur.com/n7qBqzA.png" alt="XRPL Logo">
   <h1>MetX Dashboard</h1>
   <p>Check what your XRPL NFTs allow you to do</p>
 
@@ -81,13 +89,16 @@
       const address = document.getElementById('nftAddress').value.trim();
       const resultDiv = document.getElementById('result');
       if (!address) {
-        resultDiv.textContent = "❌ Please enter an address.";
+        resultDiv.innerHTML = "❌ Please enter an address.";
+        resultDiv.className = "result error";
         return;
       }
 
-      resultDiv.textContent = "⏳ Connecting to XRPL...";
+      resultDiv.innerHTML = "⏳ Connecting to XRPL...";
+      resultDiv.className = "result";
+
       try {
-        const client = new xrpl.Client("wss://xrplcluster.com/");
+        const client = new xrpl.Client("wss://s1.ripple.com/");
         await client.connect();
 
         const response = await client.request({
@@ -95,11 +106,12 @@
           account: address
         });
 
-        resultDiv.textContent = "✅ XRPL connection successful. Account found!";
+        resultDiv.innerHTML = "✅ Connection successful!<br>Account found on XRPL.";
         client.disconnect();
       } catch (error) {
         console.error(error);
-        resultDiv.textContent = "❌ Error connecting to XRPL or invalid address.";
+        resultDiv.innerHTML = "❌ Error connecting to XRPL or invalid address.";
+        resultDiv.className = "result error";
       }
     }
   </script>
