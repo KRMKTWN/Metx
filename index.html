@@ -4,20 +4,34 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MetX — XRPL NFT Rights Checker</title>
-  <link rel="stylesheet" href="styles.css" />
-</head>
-<body>
-  <header>
-    <img src="‎https://raw.githubusercontent.com/KRMKTWN/Metx/refs/heads/main/IMG-20251004-WA0000%7E4.jpg‎" alt="MetX Logo" class="logo" />
-    <h1>Check what your XRPL NFTs allow you to do</h1>
-  </header>
-
-  <main>
-    <input id="addressInput" placeholder="Enter XRPL address or NFT ID" />
-    <button id="checkButton">🔍 Check Rights</button>
-    <p id="result"></p>
-  </main>
-
-  <script src="script.js"></script>
-</body>
-</html>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #0d0d0d;
+      color: #f5f5f5;
+      text-align: center;
+      margin: 0;
+      padding: 40px 10px;
+    }
+    .logo {
+      width: 140px;
+      border-radius: 20px;
+      box-shadow: 0 0 10px #ff00cc;
+    }
+    input {
+      padding: 12px;
+      width: 80%;
+      max-width: 400px;
+      border-radius: 8px;
+      border: none;
+      margin-top: 20px;
+      font-size: 16px;
+    }
+    button {
+      background-color: #ff00cc;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 20px;
+      margin-left: 10px;
+      font-size: 16px;
