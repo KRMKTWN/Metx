@@ -1,105 +1,62 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MetX — XRPL NFT Rights Checker</title>
-
-  <!-- Style -->
+  <title>MetX Dashboard</title>
+  <script src="https://unpkg.com/xrpl/dist/xrpl-latest.min.js"></script>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background-color: #0d0d0d;
-      color: #f5f5f5;
-      text-align: center;
       margin: 0;
-      padding: 40px 10px;
-    }
-    .logo {
-      width: 140px;
-      border-radius: 20px;
-      box-shadow: 0 0 10px #ff00cc;
-    }
-    input {
-      padding: 12px;
-      width: 80%;
-      max-width: 400px;
-      border-radius: 8px;
-      border: none;
-      margin-top: 20px;
-      font-size: 16px;
-    }
-    button {
-      background-color: #ff00cc;
+      background: linear-gradient(135deg, #000000, #1a002d);
       color: white;
-      border: none;
-      border-radius: 8px;
-      padding: 12px 20px;
-      margin-left: 10px;
-      font-size: 16px;
-      cursor: pointer;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      text-align: center;
     }
-    #result {
-      margin-top: 30px;
-      font-size: 18px;
-      color: #ccc;
+
+    img {
+      width: 100px;
+      height: auto;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+
+    #status {
+      margin-top: 15px;
+      font-size: 1rem;
+      color: #ff80ff;
     }
   </style>
 </head>
-
 <body>
-  <h1>MetX — XRPL NFT Rights Checker</h1>
-  <img class="logo" src="https://upload.wikimedia.org/wikipedia/commons/0/0e/XRPL_logo.png" alt="XRPL logo" />
+  <img src="https://upload.wikimedia.org/wikipedia/commons/0/0a/XRPL_Logo.svg" alt="XRPL Logo" />
+  <h1>MetX Dashboard</h1>
+  <div id="status">Connexion au réseau XRPL...</div>
 
-  <div>
-    <input id="nftId" type="text" placeholder="Enter NFT Token ID..." />
-    <button id="checkBtn">Check</button>
-  </div>
-
-  <div id="result"></div>
-
-  <!-- XRPL LIB -->
-  <script src="https://unpkg.com/xrpl/dist/xrpl-latest.min.js"></script>
-
-  <!-- APP SCRIPT -->
   <script>
-    // Exécuter seulement quand tout est chargé
-    window.addEventListener("load", async () => {
-      const btn = document.getElementById("checkBtn");
-      const result = document.getElementById("result");
-
-      btn.addEventListener("click", async () => {
-        const tokenId = document.getElementById("nftId").value.trim();
-        if (!tokenId) {
-          result.textContent = "Please enter an NFT Token ID.";
-          return;
-        }
-
-        result.textContent = "Connecting to XRPL...";
-
-        try {
-          const client = new xrpl.Client("wss://xrplcluster.com");
-          await client.connect();
-
-          const response = await client.request({
-            command: "nft_info",
-            nft_id: tokenId
-          });
-
-          client.disconnect();
-
-          const nft = response.result;
-          result.innerHTML = `
-            <p><strong>Issuer:</strong> ${nft.issuer}</p>
-            <p><strong>Flags:</strong> ${nft.flags}</p>
-            <p><strong>URI:</strong> ${nft.uri ? decodeURIComponent(nft.uri) : "None"}</p>
-          `;
-        } catch (err) {
-          console.error(err);
-          result.textContent = "Error: " + err.message;
-        }
-      });
-    });
+    // Attendre que tout soit chargé
+    window.addEventListener('load', async () => {
+      const status = document.getElementById('status')
+      try {
+        const client = new xrpl.Client('wss://xrplcluster.com') // endpoint fiable
+        await client.connect()
+        status.textContent = "✅ Connecté au réseau XRPL"
+        console.log("Connecté :", client.isConnected())
+        await client.disconnect()
+      } catch (error) {
+        console.error(error)
+        status.textContent = "❌ Erreur de connexion XRPL"
+      }
+    })
   </script>
 </body>
 </html>
