@@ -1,62 +1,55 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MetX Dashboard</title>
+  <title>MetX — XRPL NFT Rights Checker</title>
+
+  <!-- XRPL SDK -->
   <script src="https://unpkg.com/xrpl/dist/xrpl-latest.min.js"></script>
+
   <style>
     body {
-      margin: 0;
-      background: linear-gradient(135deg, #000000, #1a002d);
-      color: white;
-      font-family: Arial, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
+      font-family: "Inter", Arial, sans-serif;
+      background: radial-gradient(circle at top, #002d16, #000);
+      color: #e0ffe8;
       text-align: center;
+      margin: 0;
+      padding: 40px 10px;
     }
 
-    img {
-      width: 100px;
-      height: auto;
-      margin-bottom: 20px;
+    .logo {
+      width: 130px;
+      border-radius: 24px;
+      margin-top: 40px;
+      box-shadow: 0 0 25px #00ff99aa;
     }
 
     h1 {
-      font-size: 2rem;
-      margin-bottom: 10px;
+      color: #00ff99;
+      margin-top: 25px;
+      font-size: 1.8em;
     }
 
-    #status {
-      margin-top: 15px;
-      font-size: 1rem;
-      color: #ff80ff;
+    p {
+      color: #aaffcc;
     }
-  </style>
-</head>
-<body>
-  <img src="https://upload.wikimedia.org/wikipedia/commons/0/0a/XRPL_Logo.svg" alt="XRPL Logo" />
-  <h1>MetX Dashboard</h1>
-  <div id="status">Connexion au réseau XRPL...</div>
 
-  <script>
-    // Attendre que tout soit chargé
-    window.addEventListener('load', async () => {
-      const status = document.getElementById('status')
-      try {
-        const client = new xrpl.Client('wss://xrplcluster.com') // endpoint fiable
-        await client.connect()
-        status.textContent = "✅ Connecté au réseau XRPL"
-        console.log("Connecté :", client.isConnected())
-        await client.disconnect()
-      } catch (error) {
-        console.error(error)
-        status.textContent = "❌ Erreur de connexion XRPL"
-      }
-    })
-  </script>
-</body>
-</html>
+    input {
+      padding: 12px;
+      width: 80%;
+      max-width: 400px;
+      border-radius: 8px;
+      border: none;
+      margin-top: 20px;
+      font-size: 16px;
+      text-align: center;
+    }
+
+    button {
+      background-color: #00ff99;
+      color: #001b0e;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 20px;
+      margin-top
