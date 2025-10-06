@@ -6,32 +6,142 @@
   <title>MetX — XRPL NFT Rights Checker</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background-color: #0d0d0d;
-      color: #f5f5f5;
+      font-family: 'Poppins', Arial, sans-serif;
+      background: linear-gradient(160deg, #120018, #2a0038 60%, #000);
+      color: #fff;
       text-align: center;
       margin: 0;
-      padding: 40px 10px;
+      padding: 40px 15px;
+      min-height: 100vh;
+    }
+    h1 {
+      margin-top: 10px;
+      font-size: 22px;
+      color: #ffb3f6;
+      text-shadow: 0 0 10px #ff00cc;
     }
     .logo {
       width: 140px;
       border-radius: 20px;
-      box-shadow: 0 0 10px #ff00cc;
+      box-shadow: 0 0 15px #ff00cc;
+      margin-bottom: 10px;
     }
     input {
-      padding: 12px;
+      padding: 14px;
       width: 80%;
-      max-width: 400px;
-      border-radius: 8px;
+      max-width: 380px;
+      border-radius: 10px;
       border: none;
-      margin-top: 20px;
+      margin-top: 25px;
       font-size: 16px;
+      text-align: center;
+      outline: none;
     }
     button {
       background-color: #ff00cc;
       color: white;
       border: none;
-      border-radius: 8px;
-      padding: 12px 20px;
+      border-radius: 10px;
+      padding: 14px 20px;
       margin-left: 10px;
       font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      background-color: #d400b8;
+      transform: scale(1.05);
+    }
+    #result {
+      margin-top: 30px;
+      white-space: pre-wrap;
+      text-align: left;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 20px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 0, 204, 0.2);
+      font-family: monospace;
+      font-size: 14px;
+    }
+    footer {
+      margin-top: 40px;
+      font-size: 12px;
+      color: #aaa;
+      opacity: 0.7;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="https://raw.githubusercontent.com/KRMKTWN/Metx/refs/heads/main/IMG-20251004-WA0000~4.jpg" alt="MetX Logo" class="logo" />
+    <h1>MetX — XRPL NFT Rights Checker</h1>
+  </header>
+
+  <main>
+    <p>Enter your XRPL address or NFT ID to check what rights your token gives you.</p>
+    <input id="addressInput" placeholder="Example: rPT1Sjq2YGrBMTttX4GZHjKu9dyfzbpAYe" />
+    <button id="checkButton">🔍 Check Rights</button>
+    <p id="result">Waiting for input...</p>
+  </main>
+
+  <footer>Built on XRPL • MetX Beta</footer>
+
+  <script src="https://unpkg.com/xrpl/dist/xrpl-latest-min.js"></script>
+  <script>
+    async function checkXRPL() {
+      const input = document.getElementById('addressInput').value.trim();
+      const result = document.getElementById('result');
+
+      if (!input) {
+        result.textContent = "❗ Please enter an XRPL address or NFT ID.";
+        return;
+      }
+
+      result.textContent = "🔄 Checking on XRPL...";
+
+      try {
+        const client = new xrpl.Client("wss://s.altnet.rippletest.net:51233"); // XRPL testnet
+        await client.connect();
+
+        let output = "";
+
+        if (input.startsWith("r")) {
+          const nfts = await client.request({
+            command: "account_nfts",
+            account: input
+          });
+
+          if (nfts.result.account_nfts.length === 0) {
+            output = "No NFTs found for this address.";
+          } else {
+            output = `🎨 Found ${nfts.result.account_nfts.length} NFTs:\n\n`;
+            for (const nft of nfts.result.account_nfts) {
+              const uri = nft.URI ? xrpl.convertHexToString(nft.URI) : "No URI";
+              output += `• NFT ID: ${nft.NFTokenID}\nURI: ${uri}\n\n`;
+            }
+          }
+
+        } else {
+          const nftInfo = await client.request({
+            command: "nft_info",
+            nft_id: input
+          });
+          output = JSON.stringify(nftInfo.result, null, 2);
+        }
+
+        result.textContent = output;
+        client.disconnect();
+
+      } catch (err) {
+        console.error(err);
+        result.textContent = "⚠️ Error: " + err.message;
+      }
+    }
+
+    document.getElementById("checkButton").addEventListener("click", checkXRPL);
+  </script>
+</body>
+</html>
