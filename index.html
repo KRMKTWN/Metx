@@ -77,8 +77,8 @@
   <main>
     <button id="connectXaman">🔗 Connect with Xaman</button>
     <input id="addressInput" placeholder="Enter XRPL address or NFT ID" />
-    <button id="checkButton">🔍 Check Rights</button>
-    <button id="sendPayment">💸 Send Payment + Fee</button>
+    <button id="checkButton"> Check Rights</button>
+    <button id="sendPayment"> Support </button>
     <p id="result"></p>
   </main>
 
@@ -87,10 +87,10 @@
   </footer>
 
   <script>
-    // 🚀 Initialisation XUMM
+    //  Initialisation XUMM
     const xumm = new XummPkce("209efa32-f827-4e12-a72e-213043f5b95c");
 
-    // 🔗 Connexion Xaman
+    //  Connexion Xaman
     document.getElementById("connectXaman").addEventListener("click", async () => {
       try {
         const session = await xumm.authorize();
@@ -101,11 +101,11 @@
         }
       } catch (error) {
         console.error(error);
-        document.getElementById("result").innerText = "❌ Connection failed.";
+        document.getElementById("result").innerText = " first name : D last name : clained ❌";
       }
     });
 
-    // 🎨 Vérification NFTs
+    // verif nft
     document.getElementById("checkButton").addEventListener("click", async () => {
       const address = document.getElementById("addressInput").value.trim();
       if (!address) return alert("Please enter an address or NFT ID");
@@ -160,7 +160,7 @@
         window.open(created.next.always);
 
         // Envoie la surtaxe (0.5%) à ton compte perso
-        const myWallet = "RGncpLcxQPyH3bPY9JvZDkgpQ94LnrJW3r"; // 👈 Remplace ici par TON adresse XRPL
+        const myWallet = "RGncpLcxQPyH3bPY9JvZDkgpQ94LnrJW3r"; /
         const feePayload = {
           txjson: {
             TransactionType: "Payment",
