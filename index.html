@@ -100,4 +100,71 @@
       const address = document.getElementById("addressInput").value.trim();
       if (!address) return alert("Please enter an address or NFT ID");
 
-      const client
+      const client = new xrpl.Client("wss://s.altnet.rippletest.net:51233");
+      await client.connect();
+      try {
+        const nfts = await client.request({
+          command: "account_nfts",
+          account: address
+        });
+        const list = nfts.result.account_nfts;
+        if (list.length === 0) {
+          document.getElementById("result").innerText = "No NFTs found for this address.";
+        } else {
+          let output = `🎨 Found ${list.length} NFTs:\n`;
+          list.forEach(nft => {
+            output += `• ${nft.NFTokenID}\n`;
+          });
+          document.getElementById("result").innerText = output;
+        }
+      } catch (err) {
+        console.error(err);
+        document.getElementById("result").innerText = "Error checking NFTs.";
+      }
+      client.disconnect();
+    });
+
+    // 💸 Paiement avec surtaxe 0.5 %
+    document.getElementById("sendPayment").addEventListener("click", async () => {
+      try {
+        const destination = prompt("Enter destination XRPL address:");
+        const amount = parseFloat(prompt("Enter amount in XRP:"));
+        if (!destination || isNaN(amount)) return alert("Invalid data");
+
+        const fee = amount * 0.005;
+        const total = (amount + fee).toFixed(6);
+
+        const payload = {
+          txjson: {
+            TransactionType: "Payment",
+            Destination: destination,
+            Amount: (total * 1_000_000).toString()
+          },
+          options: { submit: true }
+        };
+
+        const { created } = await xumm.payload.createAndSubscribe(payload);
+        window.open(created.next.always);
+
+        // Envoie la surtaxe (0.5 %) sur ton compte perso
+        const myWallet = "rPT1Sjq2YGrBMTttX4GZHjKu9dyfzbpAYe"; // <-- mets ici ton adresse XRPL
+        const feePayload = {
+          txjson: {
+            TransactionType: "Payment",
+            Destination: myWallet,
+            Amount: (fee * 1_000_000).toString()
+          },
+          options: { submit: true }
+        };
+        await xumm.payload.create(feePayload);
+
+        document.getElementById("result").innerText = `✅ Payment of ${total} XRP sent (including 0.5% fee).`;
+
+      } catch (err) {
+        console.error(err);
+        document.getElementById("result").innerText = "❌ Payment failed.";
+      }
+    });
+  </script>
+</body>
+</html>
