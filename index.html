@@ -1,119 +1,122 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MetX Dashboard</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MetX — XRPL NFT Rights Checker</title>
+  <script src="https://unpkg.com/xrpl/dist/xrpl-latest.min.js"></script>
+  <script src="https://unpkg.com/xumm-oauth2-pkce@1.0.0/dist/xumm-oauth2-pkce.min.js"></script>
   <style>
     body {
-      background-color: #002b20; /* vert foncé */
-      color: #ffffff;
-      font-family: "Inter", Arial, sans-serif;
+      background-color: #000;
+      color: #f5f5f5;
       text-align: center;
+      font-family: Arial, sans-serif;
       margin: 0;
-      padding: 50px 20px;
+      padding: 40px 10px;
     }
 
     .logo {
-      width: 120px;
-      margin-bottom: 20px;
-      filter: drop-shadow(0 0 10px #00d4aa);
+      width: 140px;
+      margin: 20px auto;
+      display: block;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
     }
 
     h1 {
-      font-size: 30px;
-      margin-bottom: 10px;
-      font-weight: 700;
-    }
-
-    p {
-      color: #d0d0d0;
-      font-size: 18px;
-      margin-bottom: 30px;
-    }
-
-    input {
-      width: 80%;
-      max-width: 400px;
-      padding: 12px;
-      border-radius: 10px;
-      border: 2px solid #00d4aa;
-      font-size: 16px;
-      text-align: center;
-      outline: none;
-      background-color: #013428;
-      color: white;
+      color: #00ff88;
     }
 
     button {
-      background-color: #00d4aa;
-      color: #002b20;
+      background-color: #00ff88;
       border: none;
-      border-radius: 10px;
-      padding: 12px 24px;
+      color: black;
       font-size: 16px;
-      margin-top: 20px;
+      padding: 12px 20px;
+      border-radius: 8px;
       cursor: pointer;
-      font-weight: 600;
+      margin: 10px;
     }
 
     button:hover {
-      background-color: #00eebd;
+      background-color: #00cc66;
     }
 
-    .result {
-      margin-top: 30px;
-      font-size: 18px;
-      color: #a8ffcb;
+    input {
+      padding: 10px;
+      width: 80%;
+      max-width: 400px;
+      border-radius: 8px;
+      border: none;
+      margin-top: 10px;
+      font-size: 16px;
     }
 
-    .error {
-      color: #ff7070;
+    #result {
+      margin-top: 20px;
+      font-size: 14px;
+      color: #ccc;
     }
   </style>
 </head>
 <body>
-  <img class="logo" src="https://i.imgur.com/n7qBqzA.png" alt="XRPL Logo">
-  <h1>MetX Dashboard</h1>
-  <p>Check what your XRPL NFTs allow you to do</p>
+  <img src="logo.png" alt="MetX Logo" class="logo" />
+  <h1>MetX — XRPL NFT Rights Checker</h1>
 
-  <input type="text" id="nftAddress" placeholder="Enter your XRPL NFT address">
-  <br>
-  <button onclick="checkRights()">🔍 Check Rights</button>
+  <main>
+    <button id="connectXaman">🔗 Connect with Xaman</button>
+    <input id="addressInput" placeholder="Enter XRPL address or NFT ID" />
+    <button id="checkButton">🔍 Check Rights</button>
+    <p id="result"></p>
+  </main>
 
-  <div id="result" class="result"></div>
-
-  <script src="https://unpkg.com/xrpl/dist/xrpl-latest.min.js"></script>
   <script>
-    async function checkRights() {
-      const address = document.getElementById('nftAddress').value.trim();
-      const resultDiv = document.getElementById('result');
-      if (!address) {
-        resultDiv.innerHTML = "❌ Please enter an address.";
-        resultDiv.className = "result error";
-        return;
-      }
+    // Initialisation de Xaman (XUMM)
+    const xumm = new XummPkce(209efa32-f827-4e12-a72e-213043f5b95c); // <-- remplace par ton Xumm App ID
 
-      resultDiv.innerHTML = "⏳ Connecting to XRPL...";
-      resultDiv.className = "result";
-
+    document.getElementById("connectXaman").addEventListener("click", async () => {
       try {
-        const client = new xrpl.Client("wss://s1.ripple.com/");
-        await client.connect();
-
-        const response = await client.request({
-          command: "account_info",
-          account: address
-        });
-
-        resultDiv.innerHTML = "✅ Connection successful!<br>Account found on XRPL.";
-        client.disconnect();
+        const session = await xumm.authorize();
+        if (session.me) {
+          const address = session.me.account;
+          document.getElementById("addressInput").value = address;
+          document.getElementById("result").innerText = `✅ Connected: ${address}`;
+        }
       } catch (error) {
         console.error(error);
-        resultDiv.innerHTML = "❌ Error connecting to XRPL or invalid address.";
-        resultDiv.className = "result error";
+        document.getElementById("result").innerText = "❌ Connection failed.";
       }
-    }
+    });
+
+    // XRPL NFT checker
+    document.getElementById("checkButton").addEventListener("click", async () => {
+      const address = document.getElementById("addressInput").value.trim();
+      if (!address) return alert("Please enter an address or NFT ID");
+
+      const client = new xrpl.Client("wss://s.altnet.rippletest.net:51233");
+      await client.connect();
+      try {
+        const nfts = await client.request({
+          command: "account_nfts",
+          account: address
+        });
+        const list = nfts.result.account_nfts;
+        if (list.length === 0) {
+          document.getElementById("result").innerText = "No NFTs found for this address.";
+        } else {
+          let output = `🎨 Found ${list.length} NFTs:\n`;
+          list.forEach(nft => {
+            output += `• ${nft.NFTokenID}\n`;
+          });
+          document.getElementById("result").innerText = output;
+        }
+      } catch (err) {
+        console.error(err);
+        document.getElementById("result").innerText = "Error checking NFTs.";
+      }
+      client.disconnect();
+    });
   </script>
 </body>
 </html>
