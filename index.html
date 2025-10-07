@@ -6,6 +6,7 @@
   <title>MetX — XRPL NFT Rights Checker</title>
   <script src="https://unpkg.com/xrpl/dist/xrpl-latest.min.js"></script>
   <script src="https://unpkg.com/xumm-oauth2-pkce@1.0.0/dist/xumm-oauth2-pkce.min.js"></script>
+
   <style>
     body {
       background-color: #000;
@@ -57,6 +58,7 @@
       margin-top: 20px;
       font-size: 14px;
       color: #ccc;
+      white-space: pre-line;
     }
   </style>
 </head>
@@ -72,8 +74,8 @@
   </main>
 
   <script>
-    // Initialisation de Xaman (XUMM)
-    const xumm = new XummPkce(209efa32-f827-4e12-a72e-213043f5b95c); // <-- remplace par ton Xumm App ID
+    // 🔗 Initialisation de Xaman (XUMM)
+    const xumm = new XummPkce("209efa32-f827-4e12-a72e-213043f5b95c");
 
     document.getElementById("connectXaman").addEventListener("click", async () => {
       try {
@@ -89,12 +91,12 @@
       }
     });
 
-    // XRPL NFT checker
+    // 🎨 XRPL NFT checker
     document.getElementById("checkButton").addEventListener("click", async () => {
       const address = document.getElementById("addressInput").value.trim();
       if (!address) return alert("Please enter an address or NFT ID");
 
-      const client = new xrpl.Client("wss://s.altnet.rippletest.net:51233");
+      const client = new xrpl.Client("wss://s.altnet.rippletest.net:51233"); // Réseau Test
       await client.connect();
       try {
         const nfts = await client.request({
